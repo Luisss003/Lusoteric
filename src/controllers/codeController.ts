@@ -1,5 +1,5 @@
-import asyncErrorHandler from "../utils/asyncErrorHandler";
-import Code from './../models/codeModel';
+import asyncErrorHandler from "../utils/asyncErrorHandler.js";
+import Code from './../models/codeModel.js';
 import { Request, Response, NextFunction } from 'express';
 
 //GET - /api/v1/code

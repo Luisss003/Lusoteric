@@ -1,23 +1,21 @@
-const User = require('./../models/userModel');
-const asyncErrorHandler = require('./../utils/asyncErrorHandler');
-const jwt = require('jsonwebtoken');
+import User from '../models/userModel';
+import asyncErrorHandler from '../utils/asyncErrorHandler';
+import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
 
-exports.signup = asyncErrorHandler(async(req, res, next) => {
-    const newUser = await User.create(req.body);
-    
-    const token = jwt.sign({exp: Math.floor(Date.now() / 1000) + (60 * 60),
-                                id: newUser.id},
-                                process.env.JWT_SECRET_KEY);
+exports.signup = asyncErrorHandler(
+    async(req: Request, res: Response, next: NextFunction) => {
+        
+        //Assuming req.body has been sanitized and validated
+        //Create user in the database
+        const newUser = await User.create(req.body);
 
-    res.status(statusCode).json({
-        status: "success",
-        token,
-        data: {
-            newUser
-        }
-    });   
-});
+        //TODO: Generate JWT token
 
-exports.signin = asyncErrorHandler(async(req, res, next) => {
-
+        res.status(200).json({
+            status: "success",
+            data: {
+                newUser
+            }
+        });   
 });
