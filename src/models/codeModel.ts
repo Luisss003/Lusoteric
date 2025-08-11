@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import {sequelize} from './../server'
+import sequelize from './../utils/sequelize.js';
 
 const Code = sequelize.define(
     'Code',
@@ -31,7 +31,6 @@ const Code = sequelize.define(
 
     },
     {
-        sequelize,
         modelName: 'Code',
     },
 );

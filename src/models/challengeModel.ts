@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
-import {sequelize} from './../server'
+import sequelize from './../utils/sequelize.js';
 
+//Define the Challenge model
 const Challenge = sequelize.define(
     'Challenge',
     {
@@ -18,7 +19,12 @@ const Challenge = sequelize.define(
             allowNull: false
         },
         category: {
-            type:DataTypes.ENUM('Code Golf', 'Obfuscation', 'Esolang', 'One-Liner', 'Forbidden Keywords', 'Poetic Code')
+            type:DataTypes.ENUM('Code Golf',
+                                'Obfuscation',
+                                'Esolang',
+                                'One-Liner',
+                                'Forbidden Keywords',
+                                'Poetic Code')
         },
         user_id:{
             type:DataTypes.INTEGER,
@@ -27,7 +33,6 @@ const Challenge = sequelize.define(
 
     },
     {
-        sequelize,
         modelName: 'Challenge',
     },
 );
