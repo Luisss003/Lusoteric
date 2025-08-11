@@ -1,6 +1,6 @@
-const express = require('express');
 const router = express.Router();
-const ChallengesController = require('./../controllers/challengesController');
+import express from 'express';
+import * as ChallengesController from './../controllers/challengesController.js';
 
 /*:8000/challenges
     GET: Display all challenges 
@@ -16,8 +16,7 @@ router.route('/')
 */
 router.route('/:id')
     .get(ChallengesController.getChallengeById)
-    .patch(ChallengesController.updateChallengeById)
-    .delete(ChallengesController.deleteChallengeById);
+    .patch(ChallengesController.updateChallengeById);
 /*
 :8000/challenges/:language
 router.route('/:languge')
