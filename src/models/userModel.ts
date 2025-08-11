@@ -18,26 +18,34 @@ const User = sequelize.define(
             allowNull: false
         },
         rank: {
-            type:DataTypes.ENUM('noob', 'skid', 'stackoverflow user', 'virgin', 'wizard', 'jeezus' ,'YWHW')
-            
+            type:DataTypes.ENUM('noob',
+                                'skid',
+                                'stackoverflow user',
+                                'wizard',
+                                'jeezus'
+                                ,'YWHW'),
+            defaultValue: 'noob'
         },
         submissionsCreated: {
-
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
         challengesSolved:{
-
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         },
         password: {
-            
+            type: DataTypes.STRING,
+            allowNull: false,
         },
         confirmPassword:{
-            
+            type: DataTypes.STRING,
+            allowNull: false,
         },
     },
     {
-        sequelize,
         modelName: 'User',
     },
 );
 
-module.exports = User;
+export default User;
