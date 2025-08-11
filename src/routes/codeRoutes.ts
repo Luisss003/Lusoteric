@@ -1,5 +1,5 @@
 import express from 'express';
-import * as codeController from './../controllers/codeController';
+import * as codeController from './../controllers/codeController.js';
 const router = express.Router();
 
 /**
@@ -8,12 +8,14 @@ const router = express.Router();
  *      POST: Create a code submission
  */
 router.route('/')
-    .get(CodeController.getCodeSubmissions)
-    .post(CodeController.createCodeSubmission);
+    .get(codeController.getCodeSubmissions)
+    .post(codeController.createCodeSubmission);
 
 /**
  * :8000/code/:id
  *      GET: Get code submission by ID
  */
 router.route('/:id')
-    .get(CodeController.getCodeSubmissionById);
+    .get(codeController.getCodeSubmissionById);
+
+export default router;
