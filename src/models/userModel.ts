@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from './../utils/sequelize.js';
+import bcrypt from 'bcrypt';
 
 const User = sequelize.define(
     'User',
@@ -38,13 +39,21 @@ const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        confirmPassword:{
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
     },
     {
         modelName: 'User',
+        hooks: {
+            //Ensure password field is not empty and hash it before saving
+            //This executes upon creation of a new user
+            beforeCreate: async(user: any) => {
+                if (!user.password) {
+                    throw new Error('Password is required');
+                }
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, 12);
+                
+            }
+        }
     },
 );
 
