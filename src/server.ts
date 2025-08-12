@@ -13,11 +13,12 @@ import sequelize from './utils/sequelize.js';
         // Test DB connection
         await sequelize.authenticate();
         console.log('Connection has been established successfully.');
-        // Sync models
-        const ChallengeSynced = await Challenge.sync();
-        const CodeSynced = await Code.sync();
-        const UserSynced = await User.sync();
         
+        // Sync models
+        await Challenge.sync({force: true});
+        await Code.sync({force: true});
+        await User.sync({force: true});
+
         // Start the server only after DB connection succeeds
         app.listen(8000, () => {
             console.log('server has started...');
