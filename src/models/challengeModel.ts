@@ -7,6 +7,7 @@ class Challenge extends Model {
     declare language: string;
     declare category: 'Code Golf' | 'Obfuscation' | 'Esolang' | 'One-Liner' | 'Forbidden Keywords' | 'Poetic Code';
     declare user_id: number;
+    declare solution: string
 };
 
 Challenge.init({
@@ -33,6 +34,10 @@ Challenge.init({
     },
     user_id:{
         type:DataTypes.INTEGER,
+        allowNull: false,
+    },
+    solution: {
+        type: DataTypes.TEXT,
         allowNull: false,
     }},
     {
