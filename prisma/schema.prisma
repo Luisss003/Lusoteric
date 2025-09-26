@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rank {
+  NOOB
+  SKID
+  SICK
+  WIZARD
+  UNEMPLOYED
+}
+
+enum Language {
+  C
+  PYTHON
+  JAVASCRIPT
+  JAVA
+  GO
+  RUST
+  X_86
+  HOLY_C
+  SHAKESPEARE
+  BASH
+  CHEF
+}
+
+enum Category {
+  CODE_GOLF
+  OBFUSCATION
+  ESOLANG
+  ONE_LINER
+  FORBIDDEN_KEYWORDS
+  POETIC_CODE
+}
+
+model User {
+  id String @id @default(uuid())
+  username String @unique
+  password String
+  country String
+  rank Rank @default(NOOB)
+  submissionsCreated Int @default(0)
+  challengesSolved Int @default(0)
+  submissions CodeSubmission[] @relation("UserCreatesSubmissions")
+  challenges Challenge[] @relation("UserCreatesChallenges")
+
+  //Timestamps
+  createdAt DateTime @default(now())
+}
+
+model CodeSubmission {
+  id String @id @default(uuid())
+  code String @db.Text 
+  language Language
+  votes Int @default(0)
+  createdBy String
+  user User @relation("UserCreatesSubmissions", fields: [createdBy], references: [id])
+  
+  //Submission is for one challenge
+  forChallenge String
+  challenge Challenge @relation("ChallengeHasSubmissions", fields: [forChallenge], references: [id])
+
+  //Timestamps
+  createdAt DateTime @default(now())
+
+}
+
+model Challenge {
+  id String @id @default(uuid())
+  language Language
+  description String @db.Text
+  category Category
+  createdBy String
+
+  //Challenge belongs to one user
+  user User @relation("UserCreatesChallenges", fields: [createdBy], references: [id])
+  expectedOutput String @db.Text
+
+  //Many submissions to one challenge
+  submissions CodeSubmission[] @relation("ChallengeHasSubmissions")
+
+  //Timestamps
+  createdAt DateTime @default(now())
+
+}
