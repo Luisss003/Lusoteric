@@ -3,11 +3,12 @@ import challengesRouter from './routes/challengesRoutes.js';
 import codeRouter from './routes/codeRoutes.js';
 import authRouter from './routes/authRoutes.js';
 import execRouter from './routes/execRoutes.js'
+import passport from 'passport';
 let app = express();
+
 
 app.use(express.json());
 
-console.log("WORKING 1")
 //Routes
 app.use('/challenges', challengesRouter);
 app.use('/code', codeRouter);
