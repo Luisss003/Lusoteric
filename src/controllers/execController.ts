@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from "../utils/databaseService.js";
 import { CodeSubmission } from "@prisma/client";
 import { Challenge } from "@prisma/client";
-import { executeC, executeJava } from "../utils/executeUtils.js";
+import { executeC, executeGo, executeHolyC, executeJava, executeJavaScript, executeRust, executeX86 } from "../utils/executeUtils.js";
 
 export const executeSubmission = asyncErrorHandler(
     async(req: Request, res: Response) => {
@@ -38,21 +38,26 @@ export const executeSubmission = asyncErrorHandler(
             case "CHEF":
                 break;
             case "GO":
+                output = await executeGo(code);
                 break;
             case "HOLY_C":
+                output = await executeHolyC(code);
                 break;
             case "JAVA":
                 output = await executeJava(code);
                 break;
             case "JAVASCRIPT":
+                output = await executeJavaScript(code);
                 break;
             case "PYTHON":
                 break;
             case "RUST":
+                output = await executeRust(code);
                 break;
             case "SHAKESPEARE":
                 break;
             case "X_86":
+                output = await executeX86(code);
                 break;
         }
     
