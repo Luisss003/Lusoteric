@@ -48,13 +48,14 @@ model User {
   id String @id @default(uuid())
   username String @unique
   password String
+  salt String
   country String
   rank Rank @default(NOOB)
   submissionsCreated Int @default(0)
   challengesSolved Int @default(0)
   submissions CodeSubmission[] @relation("UserCreatesSubmissions")
   challenges Challenge[] @relation("UserCreatesChallenges")
-
+  testcases Testcase[] @relation("UserCreatesTestcases")
   //Timestamps
   createdAt DateTime @default(now())
 }
@@ -63,13 +64,12 @@ model CodeSubmission {
   id String @id @default(uuid())
   code String @db.Text 
   language Language
-  votes Int @default(0)
   createdBy String
   user User @relation("UserCreatesSubmissions", fields: [createdBy], references: [id])
   
   //Submission is for one challenge
-  forChallenge String
-  challenge Challenge @relation("ChallengeHasSubmissions", fields: [forChallenge], references: [id])
+  challengeId String
+  challenge Challenge @relation("ChallengeHasSubmissions", fields: [challengeId], references: [id])
 
   //Timestamps
   createdAt DateTime @default(now())
@@ -81,14 +81,32 @@ model Challenge {
   language Language
   description String @db.Text
   category Category
-  createdBy String
 
   //Challenge belongs to one user
   user User @relation("UserCreatesChallenges", fields: [createdBy], references: [id])
-  expectedOutput String @db.Text
+  createdBy String
 
   //Many submissions to one challenge
   submissions CodeSubmission[] @relation("ChallengeHasSubmissions")
+
+  //Many testcases to one challenge
+  testcases Testcase[] @relation("ChallengeHasTestcases")
+
+  //Timestamps
+  createdAt DateTime @default(now())
+
+}
+
+model Testcase {
+   id String @id @default(uuid())
+   input String @db.Text
+   output String @db.Text
+
+  createdBy String
+  user User @relation("UserCreatesTestcases", fields: [createdBy], references: [id])
+
+  challengeId String
+  challenge Challenge @relation("ChallengeHasTestcases", fields: [challengeId], references: [id])
 
   //Timestamps
   createdAt DateTime @default(now())

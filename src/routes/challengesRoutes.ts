@@ -1,21 +1,12 @@
 const router = express.Router();
 import express from 'express';
 import * as ChallengesController from './../controllers/challengesController.js';
+import passport from 'passport';
 
 
 router.route('/')
-    .get(ChallengesController.getChallenges) 
-    .post(ChallengesController.createChallenge); 
+    .get(passport.authenticate('jwt', {session: false}),ChallengesController.getChallenges) 
+    .post(passport.authenticate('jwt', {session: false}),ChallengesController.createChallenge); 
     
-
-/** 
-router.route('/:id')
-    .get(ChallengesController.getChallengeById)
-    .patch(ChallengesController.updateChallengeById);
-
-
-router.route('/:id/submit')
-    .post(ChallengesController.submitChallengeSolution);
-*/
 export default router;
 
