@@ -3,13 +3,20 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from "../utils/databaseService.js";
 import { CodeSubmission } from "@prisma/client";
 import { Challenge } from "@prisma/client";
-import { executeC, executeGo, executeHolyC, executeJava, executeJavaScript, executeRust, executeX86 } from "../utils/executeUtils.js";
+import * as execUtils from "../utils/executeUtils.js";
 
 export const executeSubmission = asyncErrorHandler(
     async(req: Request, res: Response) => {
         const {challengeId, code} = req.body;
+        const {testcases} = (req as any);
+        console.log(testcases)
 
         let output = '';
+        let o: {
+            output: string
+            passed: boolean
+        }
+        
         if(!challengeId || !code){
             return res.status(404).json({
                 status: "failure",
@@ -18,12 +25,11 @@ export const executeSubmission = asyncErrorHandler(
         }
 
         //Get solution for challenge
-        const {expectedOutput, language} = await prisma.challenge.findUnique({
+        const { language} = await prisma.challenge.findUnique({
             where: {
                 id: challengeId
             },
             select: {
-                expectedOutput: true,
                 language: true,
             }
         }) || {};
@@ -31,33 +37,36 @@ export const executeSubmission = asyncErrorHandler(
         //Execute util function based on language
         switch(language){
             case "BASH":
+                output = await execUtils.executeBash(code);
                 break;
             case "C":
-                output = await executeC(code);
+                output = await execUtils.executeC(code, testcases);
                 break;
             case "CHEF":
+                output = await execUtils.executeChef(code);
                 break;
             case "GO":
-                output = await executeGo(code);
+                output = await execUtils.executeGo(code);
                 break;
             case "HOLY_C":
-                output = await executeHolyC(code);
+                output = await execUtils.executeHolyC(code);
                 break;
             case "JAVA":
-                output = await executeJava(code);
+                output = await execUtils.executeJava(code);
                 break;
             case "JAVASCRIPT":
-                output = await executeJavaScript(code);
+                output = await execUtils.executeJavaScript(code);
                 break;
             case "PYTHON":
                 break;
             case "RUST":
-                output = await executeRust(code);
+                output = await execUtils.executeRust(code);
                 break;
             case "SHAKESPEARE":
+                output = await execUtils.executeShakespeare(code);
                 break;
             case "X_86":
-                output = await executeX86(code);
+                output = await execUtils.executeX86(code);
                 break;
         }
     

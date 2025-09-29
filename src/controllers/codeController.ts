@@ -1,7 +1,7 @@
 import asyncErrorHandler from "../utils/asyncErrorHandler.js";
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../utils/databaseService.js'
-import { CodeSubmission } from "../generated/prisma/index.js";
+import { CodeSubmission } from "@prisma/client";
 
 
 //GET - /api/v1/code
@@ -22,20 +22,20 @@ export const getCodeSubmissions = asyncErrorHandler(
 //POST - /api/v1/code
 export const createCodeSubmission = asyncErrorHandler(
     async(req: Request, res: Response) => {
-    const {code, language, createdBy, forChallenge} = req.body;
+    const {code, language, createdBy, challengeId} = req.body;
     //Create new code submission based on request body
     const newCodeSubmission: CodeSubmission = await prisma.codeSubmission.create({
         data: {
             code: code,
             language: language,
             createdBy: createdBy,
-            forChallenge: forChallenge
+            challengeId: challengeId
         }
     })
 
     //Return 201 status code and the new code submission if successful
-    res.status(200).json({
-        status: "status",
+    res.status(201).json({
+        status: "sucess",
         data: {
             newCodeSubmission
         }

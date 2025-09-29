@@ -5,33 +5,50 @@ import { write } from 'fs';
 
 const execAsync = promisify(exec);
 
-export async function executeC(code: string){
-    //Write user code to temp file
+export async function executeC(
+    code: string, 
+    testCases: { input: string; output: string }[]
+): Promise<{ output: string; passed: boolean }> {
+    
     const tempFilePath = '/tmp/code.c';
     await writeFile(tempFilePath, code, 'utf-8');
 
-    //Execute user code in a docker container
-    const { stdout, stderr } = await execAsync(`
-        docker run --rm \
-        --memory=128m \
-        --cpus=0.5 \
-        --network=none \
-        --read-only \
-        --tmpfs /tmp:exec,size=50m \
-        -v ${tempFilePath}:/usr/src/app/userCode.c:ro \
-        -w /usr/src/app \
-        gcc:latest \
-        sh -c "gcc userCode.c -o /tmp/runMe && /tmp/runMe"
-    `, {
-        timeout: 15000,
-        maxBuffer: 1024 * 1024
-    });
+    const results: string[] = [];
+    let allPassed = true;
+
+    for (const testCase of testCases) {
+        const { stdout } = await execAsync(
+            `docker run --rm \
+            --memory=128m \
+            --cpus=0.5 \
+            --network=none \
+            --read-only \
+            --tmpfs /tmp:exec,size=50m \
+            -v ${tempFilePath}:/usr/src/app/userCode.c:ro \
+            -w /usr/src/app \
+            gcc:latest \
+            sh -c "gcc userCode.c -o /tmp/runMe && echo '${testCase.input}' | /tmp/runMe"`,
+            { timeout: 15000, maxBuffer: 1024 * 1024 }
+        );
+
+        const got = stdout.trim();
+        const passed = got === testCase.output;
+
+        if (!passed) allPassed = false;
+
+        results.push(
+            `input: ${testCase.input}, got: ${got}, expected: ${testCase.output}, result: ${passed ? 'success' : 'fail'}`
+        );
+    }
 
     await unlink(tempFilePath);
 
-    return stdout;
-
+    return {
+        output: results.join('\n'),
+        passed: allPassed
+    };
 }
+
 export async function executeJava(code: string) {
     const tempFilePath = '/tmp/Main.java'; // must match `public class Main`
     await writeFile(tempFilePath, code, 'utf-8');
@@ -145,7 +162,8 @@ export async function executeX86(code: string){
 
 }
 
-//WORK IN PROGRESS
+//WIP
+//Unable to get stdout from holy c executable
 export async function executeHolyC(code: string){
     const tempFilePath = '/tmp/main.HC';
     await writeFile(tempFilePath, code, 'utf-8');
@@ -164,10 +182,70 @@ export async function executeHolyC(code: string){
         })
 
     await unlink(tempFilePath);
-    console.log(stdout)
     return stdout;
 }
 
-export function executeShakespeare(){}
-export function executeBash(){}
-export function executeChef(){}
+export async function executeShakespeare(code: string){
+    const tempFilePath = '/tmp/main.spl';
+    await writeFile(tempFilePath, code, 'utf-8');
+    const {stdout, stderr} = await execAsync(`
+        docker run --rm \
+            --memory=512m \
+            --cpus=1 \
+            --network=none \
+            --tmpfs /tmp:exec,size=100m \
+            -v ${tempFilePath}:/usr/src/app/main.spl:ro \
+            -w /usr/src/app \
+            luisss003/shakespeare:latest \
+            bash -c "shakespeare run main.spl"
+        `,{
+            timeout: 10000
+        });
+    
+    await unlink(tempFilePath);
+    return stdout;
+
+}
+export async function executeBash(code: string){
+    const tempFilePath = '/tmp/main.sh';
+    await writeFile(tempFilePath, code, 'utf-8');
+    
+    const {stdout, stderr} = await execAsync(`
+        docker run --rm \
+            --memory=512m \
+            --cpus=1 \
+            --network=none \
+            --tmpfs /tmp:exec,size=100m \
+            -v ${tempFilePath}:/usr/src/app/main.sh:ro \
+            -w /usr/src/app \
+            luisss003/shakespeare:latest \
+            bash -c "bash main.sh"
+        `,{
+            timeout: 10000
+        });
+    
+    await unlink(tempFilePath);
+    return stdout;
+}
+export async function executeChef(code: string){
+    const tempFilePath = '/tmp/main.chef';
+    const actualCode = code.replace(/\\n/g, '\n');
+    await writeFile(tempFilePath, actualCode, 'utf-8');
+    
+    const {stdout, stderr} = await execAsync(`
+        docker run --rm \
+            --memory=512m \
+            --cpus=1 \
+            --network=none \
+            --tmpfs /tmp:exec,size=100m \
+            -v ${tempFilePath}:/usr/src/app/main.chef:ro \
+            -w /usr/src/app \
+            luisss003/chef:latest \
+            bash -c "python chef.py main.chef"
+        `,{
+            timeout: 10000
+        });
+    
+    await unlink(tempFilePath);
+    return stdout;
+}

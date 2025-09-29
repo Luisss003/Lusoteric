@@ -33,7 +33,7 @@ export const getChallenges = asyncErrorHandler(
 export const createChallenge = asyncErrorHandler(
     async(req: Request, res: Response, next: NextFunction) => {
         const {language, description, category,
-                createdBy, expectedOutput} = req.body
+                createdBy} = req.body
 
         //Assuming req.body has been sanitized and validated
         //Create a new challenge in the database
@@ -43,7 +43,6 @@ export const createChallenge = asyncErrorHandler(
                 description: description,
                 category: category,
                 createdBy: createdBy,
-                expectedOutput: expectedOutput
             }
         });
 
