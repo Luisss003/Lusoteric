@@ -3,3 +3,5 @@ node_modules/
 dist/
 /src/generated/prisma
 prisma/generated/
+/src/utils/id_rsa_priv.pem
+/src/utils/id_rsa_pub.pem
