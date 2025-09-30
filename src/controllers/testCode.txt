@@ -1,0 +1,22 @@
+Below are test json strings that can be used in the "code" field of the req 
+body for calls to /exec
+
+SPL:
+A Simple Sum.
+
+Romeo, a man of simple arithmetic.
+Juliet, a woman to hold the numbers.
+
+Act I: The Calculation.
+
+Scene I: A Brief Encounter.
+
+[Enter Romeo and Juliet]
+
+Romeo:
+Listen to your heart.
+Thou art as fair as the sum of thyself and a brave hero.
+Open thy heart.
+
+[Exeunt]
+
